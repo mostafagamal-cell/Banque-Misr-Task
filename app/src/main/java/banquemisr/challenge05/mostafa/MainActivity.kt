@@ -7,6 +7,15 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +36,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,119 +44,73 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import banquemisr.challenge05.mostafa.detailsscreen.DetailScreen
+import banquemisr.challenge05.mostafa.di.UiStates
+import banquemisr.challenge05.mostafa.pojos.Results
+import banquemisr.challenge05.mostafa.popular.PopularScreen
+import banquemisr.challenge05.mostafa.remotedatasource.RemoteDataSource
+import banquemisr.challenge05.mostafa.repo.Repo
 import banquemisr.challenge05.mostafa.ui.theme.MostafaTheme
+import banquemisr.challenge05.mostafa.viewmodel.DetailFac
+import banquemisr.challenge05.mostafa.viewmodel.DetialViewModel
+import banquemisr.challenge05.mostafa.viewmodel.PopularFac
 import banquemisr.challenge05.mostafa.viewmodel.PopularViewModel
 import coil3.compose.AsyncImage
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.first
-import org.koin.android.ext.android.inject
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-         val  viewmodel: PopularViewModel by inject()
         setContent {
             MostafaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        viewmodel,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun Greeting(viewModel: PopularViewModel, modifier: Modifier = Modifier) {
-    // Collect the lazy paging items from the ViewModel
-    val lazyPagingItems = viewModel.popular.collectAsLazyPagingItems()
-    val context = LocalContext.current
-    val connectivityObserver = remember { ConnectivityListener(context) }
-    val isConnected by connectivityObserver.isConnected.collectAsState(true)
-    if (isConnected) {
-        lazyPagingItems.retry()
-    }
-    Log.d("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee","builded")
-    LazyColumn(modifier.fillMaxSize()) {
-        items(lazyPagingItems.itemCount) { movie ->
-            movie.let {
-                lazyPagingItems[movie]?.let { it1 ->
-                    Item(
-                        title = it1.title ?: "Unknown Title",
-                        image = it1.posterPath ?: "default_image_url"
-                    )
-                }
-            }
-        }
-        when {
-            lazyPagingItems.loadState.refresh is LoadState.Loading -> {
-                item {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-            lazyPagingItems.loadState.append is LoadState.Loading -> {
-                item {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-            }
-            lazyPagingItems.loadState.append is LoadState.Error -> {
-                val error = (lazyPagingItems.loadState.append as LoadState.Error).error
-                item {
-                    ShowErrorMessage(error.message.toString())
-                }
-            }
-        }
-
-        lazyPagingItems.loadState.refresh.let { loadState ->
-            if (loadState is LoadState.Error) {
-                item {
-                    ShowErrorMessage(loadState.error.message.toString())
+                   nav(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
 @Composable
-fun ShowErrorMessage(message: String){
-    Log.d("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",message.toString())
-
-    Text(
-        text = "Error: $message",
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        color = Color.Red,
-        textAlign = TextAlign.Center
-    )
-}
-@Composable
-fun Item(title:String,image:String){
-    Card() {
-        Column(modifier = Modifier.fillMaxWidth().fillMaxHeight(.2F),horizontalAlignment = Alignment.CenterHorizontally) {
-            AsyncImage(model = "https://image.tmdb.org/t/p/w500$image", contentDescription = "moviePoster")
-            Text(text = title)
+fun nav(modifier: Modifier){
+    val navController = rememberNavController()
+    val repo= Repo(RemoteDataSource())
+    val popularFac= PopularFac(repo)
+    val detailFac= DetailFac(repo)
+    val popularViewModel= viewModel<PopularViewModel>(factory = popularFac)
+    val detailViewModel= viewModel<DetialViewModel>(factory = detailFac)
+    NavHost(navController = navController, startDestination = Destination.POPULAR.route) {
+        composable(Destination.POPULAR.route) {
+            PopularScreen(navController=navController,modifier = modifier,viewModel = popularViewModel)
+        }
+        composable(Destination.DETAIL.route) {
+            val encodedMovieJson = it.arguments?.getString("id")
+            val movieJson = encodedMovieJson?.let {e->
+                URLDecoder.decode(e, StandardCharsets.UTF_8.toString())
+            }
+            val movie = Gson().fromJson(movieJson, Results::class.java)
+            Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaee", "nav: $id")
+            DetailScreen(navController=navController,modifier = modifier, viewModel =detailViewModel, results = movie)
         }
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MostafaTheme {
-    }
 }
 
 object Screens{
@@ -157,9 +121,9 @@ object Screens{
 }
 sealed class Destination(val route:String){
     data object NowPlaying:Destination(route=Screens.NowPlaying)
-    data object Preview:Destination(route=Screens.POPULAR)
+    data object POPULAR:Destination(route=Screens.POPULAR)
     data object UPCOMING:Destination(route=Screens.UPCOMING)
     data object DETAIL:Destination(route="${Screens.DETAIL}/{id}"){
-      fun createRoute(id:Int)= "${Screens.DETAIL}/$id"
+      fun createRoute(id:String)= "${Screens.DETAIL}/$id"
     }
 }

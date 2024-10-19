@@ -2,6 +2,7 @@ package banquemisr.challenge05.mostafa.internet
 
 import android.util.Log
 import banquemisr.challenge05.mostafa.pojos.MovieResponse
+import banquemisr.challenge05.mostafa.pojos.Results
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -18,7 +19,7 @@ val client=OkHttpClient().newBuilder().addInterceptor { chain: Interceptor.Chain
     return@addInterceptor chain.proceed(newRequest)
 }.build()
 val retrofit= Retrofit.Builder().baseUrl(url).client(client).addConverterFactory(GsonConverterFactory.create()).build()
-var api:Api?=null
+
 interface Api{
     @GET("now_playing")
     suspend fun getNowPlaying(@Query("page")page:Long): MovieResponse
@@ -27,11 +28,8 @@ interface Api{
     @GET("upcoming")
     suspend fun getUpcoming(@Query("page")page:Long): MovieResponse
     @GET("{id}")
-    suspend fun getDetails(@Path("id")id:Long): MovieResponse
+    suspend fun getDetails(@Path("id")id:Long): Results
 }
-fun getapi():Api{
-    if (api==null){
-        api=retrofit.create(Api::class.java)
-    }
-    return api!!
+val api:Api by lazy {
+    retrofit.create(Api::class.java)
 }

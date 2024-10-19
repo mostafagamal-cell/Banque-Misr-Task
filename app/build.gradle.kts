@@ -76,19 +76,11 @@ dependencies {
     implementation ("androidx.paging:paging-runtime:3.3.2")
     implementation ("androidx.paging:paging-compose:3.3.2")
 
-// Koin Core
-    implementation ("io.insert-koin:koin-core:4.0.0")
 
-    // Koin for Android
-    implementation ("io.insert-koin:koin-android:3.5.0")
-
-    // Koin for Jetpack Compose
-    implementation ("io.insert-koin:koin-androidx-compose:3.5.0")
 
 
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    implementation("io.insert-koin:koin-core-viewmodel:4.0.0")
 
 
     implementation("androidx.room:room-runtime:2.6.1")
@@ -96,5 +88,5 @@ dependencies {
 
     implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
-
+    implementation("com.google.code.gson:gson:2.11.0")
 }

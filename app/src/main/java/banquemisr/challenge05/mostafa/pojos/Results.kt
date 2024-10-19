@@ -19,5 +19,4 @@ data class Results (
   @SerializedName("video"             ) var video            : Boolean?       = null,
   @SerializedName("vote_average"      ) var voteAverage      : Double?        = null,
   @SerializedName("vote_count"        ) var voteCount        : Long?           = null
-
 )
