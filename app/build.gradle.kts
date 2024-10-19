@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -68,4 +69,30 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("androidx.navigation:navigation-compose:2.8.3")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    implementation ("androidx.paging:paging-runtime:3.3.2")
+    implementation ("androidx.paging:paging-compose:3.3.2")
+
+// Koin Core
+    implementation ("io.insert-koin:koin-core:4.0.0")
+
+    // Koin for Android
+    implementation ("io.insert-koin:koin-android:3.5.0")
+
+    // Koin for Jetpack Compose
+    implementation ("io.insert-koin:koin-androidx-compose:3.5.0")
+
+
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("io.insert-koin:koin-core-viewmodel:4.0.0")
+
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+
+
+
 }
