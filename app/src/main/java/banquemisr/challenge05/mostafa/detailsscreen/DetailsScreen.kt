@@ -2,6 +2,7 @@ package banquemisr.challenge05.mostafa.detailsscreen
 
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -40,14 +42,12 @@ fun DetailScreen(navController: NavController, modifier: Modifier = Modifier, vi
    }
     val movie =viewModel.detailState.collectAsState()
     Column(modifier = modifier.fillMaxSize()) {
-        Row(modifier = Modifier.fillMaxWidth().fillMaxHeight(.1f), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(modifier = Modifier.padding(10.dp).fillMaxHeight(), onClick = { navController.popBackStack() }) {
-                Icon(imageVector =  Icons.Filled.ArrowBack, contentDescription = "back")
-            }
-            Text(text = "${results.title}", fontSize = 25.sp)
-        }
         when (movie.value) {
-            is UiStates.Loading -> {}
+            is UiStates.Loading -> {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    CircularProgressIndicator()
+                }
+            }
             is UiStates.Success -> {
                 val data = (movie.value as UiStates.Success).data
                 Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
@@ -80,7 +80,13 @@ fun DetailScreen(navController: NavController, modifier: Modifier = Modifier, vi
                 }
             }
 
-            is UiStates.Error -> {}
+            is UiStates.Error -> {
+                val error = (movie.value as UiStates.Error).message
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                    Text(text = "Error: $error", textAlign = TextAlign.Center)
+                }
+
+            }
         }
     }
 

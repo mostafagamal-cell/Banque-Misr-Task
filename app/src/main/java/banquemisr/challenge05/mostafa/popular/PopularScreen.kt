@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -61,13 +64,18 @@ fun PopularScreen(viewModel: PopularViewModel, modifier: Modifier = Modifier,nav
             Log.d ("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "$isConnected")
             lazyPagingItems.retry()
         }
+
         Column(modifier = modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-            LazyRow( modifier = Modifier.fillMaxWidth().fillMaxHeight(.7F), horizontalArrangement = Arrangement.Center) {
+            LazyRow(
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(.7F),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 items(lazyPagingItems.itemCount) { movie ->
                     movie.let {
                         lazyPagingItems[movie]?.let { it1 ->
                             Spacer(modifier = Modifier.width(16.dp))
-                            Item(move = it1,navController,
+                            Item(
+                                move = it1, navController,
                                 id = it1.id?.toInt() ?: 0,
                                 title = it1.title ?: "Unknown Title",
                                 image = it1.posterPath ?: "default_image_url"
