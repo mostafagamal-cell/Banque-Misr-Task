@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.paging.testing.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -91,6 +92,8 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
     implementation("com.google.code.gson:gson:2.11.0")
 
+    testImplementation ("org.mockito:mockito-core:5.5.0")
+    androidTestImplementation ("org.mockito:mockito-android:5.5.0")
 
     // Unit Testing Libraries
     testImplementation("org.hamcrest:hamcrest-all:1.3")

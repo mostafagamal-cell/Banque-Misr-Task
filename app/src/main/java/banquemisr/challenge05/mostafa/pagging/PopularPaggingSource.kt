@@ -27,7 +27,9 @@ class PopularPaggingSource(private val remoteDataSource: IRemoteDataSource) : Pa
             return LoadResult.Error(exception)
         } catch (exception: HttpException) {
             return LoadResult.Error(exception)
-        }
+        } catch (exception:Exception){
+        return LoadResult.Error(exception)
+    }
     }
 
     override fun getRefreshKey(state: PagingState<Long, Results>): Long? {

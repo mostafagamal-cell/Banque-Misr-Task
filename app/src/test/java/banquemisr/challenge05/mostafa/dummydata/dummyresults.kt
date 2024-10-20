@@ -24,7 +24,7 @@ fun generateDummyResultsList(i: Int): List<Results> {
     }
 }
 fun generateDummyResults(): List<MovieResponse>{
-    return List(10) {
+    return List(11) {
         MovieResponse(
             page = it.toLong(),
             results = generateDummyResultsList(it) as ArrayList<Results>,
