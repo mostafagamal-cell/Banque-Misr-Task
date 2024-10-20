@@ -1,4 +1,4 @@
-package banquemisr.challenge05.mostafa.di
+package banquemisr.challenge05.mostafa.uistates
 
 sealed class UiStates<out T> {
     data object Loading : UiStates<Nothing>()

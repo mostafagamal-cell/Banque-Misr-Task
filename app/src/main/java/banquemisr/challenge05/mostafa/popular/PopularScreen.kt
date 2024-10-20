@@ -4,22 +4,21 @@ import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Tab
@@ -29,9 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,7 +47,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import banquemisr.challenge05.mostafa.ConnectivityListener
 import banquemisr.challenge05.mostafa.Destination
 import banquemisr.challenge05.mostafa.R
-import banquemisr.challenge05.mostafa.di.UiStates
 import banquemisr.challenge05.mostafa.pojos.Results
 import banquemisr.challenge05.mostafa.ui.theme.MostafaTheme
 import banquemisr.challenge05.mostafa.viewmodel.PopularViewModel
@@ -70,28 +66,24 @@ fun PopularScreen(viewModel: PopularViewModel, modifier: Modifier = Modifier,nav
             Log.d ("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "$isConnected")
             lazyPagingItems.retry()
         }
-        when(selected) {
-            0 -> {
-                lazyPagingItems = viewModel.popular.collectAsLazyPagingItems()
-            }
+        val popularstate by viewModel.popularStateFlow.collectAsState()
+        val nowPlayingstate by viewModel.nowPlayingStateFlow.collectAsState()
+        val upcomingstate by viewModel.upcomingStateFlow.collectAsState()
 
-            1 -> {
-                lazyPagingItems = viewModel.nowPlaying.collectAsLazyPagingItems()
-            }
-
-            2 -> {
-                lazyPagingItems = viewModel.upcoming.collectAsLazyPagingItems()
-            }
-        }
      Column(
         modifier = modifier.fillMaxSize(),
+
     ) {
+
         TabRow(
             selectedTabIndex = selected,
             modifier = Modifier.fillMaxWidth(),
 
         ){
-            Tab(selected = selected == 0, onClick =  { viewModel.selectTab(0) },){
+            Tab(selected = selected == 0, onClick =  {
+                viewModel.selectTab(0)
+
+                    },){
                 Text(text = "Popular", fontSize = 20.sp)
                 Spacer(Modifier.height(16.dp))
 
@@ -106,20 +98,41 @@ fun PopularScreen(viewModel: PopularViewModel, modifier: Modifier = Modifier,nav
                 Spacer(Modifier.height(16.dp))
             }
         }
-        Spacer(modifier = Modifier.fillMaxHeight(.1f))
-        ScreenContent(lazyPagingItems, navController)
+         when(selected) {
+             0 -> {
+                 lazyPagingItems = viewModel.popular.collectAsLazyPagingItems()
+                 Spacer(modifier = Modifier.fillMaxHeight(.1f))
+                 ScreenContent(lazyPagingItems, navController,popularstate)
+             }
+
+             1 -> {
+                 lazyPagingItems = viewModel.nowPlaying.collectAsLazyPagingItems()
+                 Spacer(modifier = Modifier.fillMaxHeight(.1f))
+                 ScreenContent(lazyPagingItems, navController,nowPlayingstate)
+             }
+
+             2 -> {
+                 lazyPagingItems = viewModel.upcoming.collectAsLazyPagingItems()
+                 Spacer(modifier = Modifier.fillMaxHeight(.1f))
+                 ScreenContent(lazyPagingItems, navController,upcomingstate)
+
+             }
+         }
+
     }
 }
 
 @Composable
 private fun ScreenContent(
     lazyPagingItems: LazyPagingItems<Results>,
-    navController: NavController
+    navController: NavController,state:LazyListState
 ) {
-        LazyRow(
+    Log.d("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "ScreenContent")
+    LazyRow(
+            state = state,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(.85F),
+                .fillMaxHeight(),
             horizontalArrangement = Arrangement.Center
         ) {
             items(lazyPagingItems.itemCount) { movie ->
@@ -207,7 +220,9 @@ fun Item(move: Results, nav:NavController, id:Int, title:String, image:String){
     }) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             AsyncImage(modifier = Modifier.graphicsLayer { alpha = animatedAlpha.value },placeholder = painterResource(id = R.drawable.loading) ,model = "https://image.tmdb.org/t/p/w500$image", contentDescription = "moviePoster",)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = move.releaseDate.toString())
+            Spacer(modifier = Modifier.height(4.dp))
             Text(text = title)
         }
     }

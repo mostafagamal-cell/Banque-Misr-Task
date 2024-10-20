@@ -1,5 +1,6 @@
 package banquemisr.challenge05.mostafa.viewmodel
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,12 @@ class PopularViewModel(repo:Repo): ViewModel() {
     val upcoming=repo.getUpcoming().cachedIn(viewModelScope)
     private var selectedTab = MutableStateFlow(0)
     val selectedTabIndex: StateFlow<Int> = selectedTab
+    private var popularState= MutableStateFlow<LazyListState>(LazyListState())
+    val popularStateFlow: StateFlow<LazyListState> = popularState
+    private var nowPlayingState= MutableStateFlow<LazyListState>(LazyListState())
+    val nowPlayingStateFlow: StateFlow<LazyListState> = nowPlayingState
+    private var upcomingState= MutableStateFlow<LazyListState>(LazyListState())
+    val upcomingStateFlow: StateFlow<LazyListState> = upcomingState
     fun selectTab(index: Int) {
         selectedTab.value = index
     }

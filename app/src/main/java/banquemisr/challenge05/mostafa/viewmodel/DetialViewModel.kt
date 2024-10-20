@@ -3,7 +3,7 @@ package banquemisr.challenge05.mostafa.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import banquemisr.challenge05.mostafa.di.UiStates
+import banquemisr.challenge05.mostafa.uistates.UiStates
 import banquemisr.challenge05.mostafa.pojos.Results
 import banquemisr.challenge05.mostafa.repo.Repo
 import kotlinx.coroutines.Dispatchers

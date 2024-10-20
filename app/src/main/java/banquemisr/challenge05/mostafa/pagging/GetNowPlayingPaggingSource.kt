@@ -6,11 +6,12 @@ import androidx.annotation.RequiresExtension
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import banquemisr.challenge05.mostafa.pojos.Results
+import banquemisr.challenge05.mostafa.remotedatasource.IRemoteDataSource
 import banquemisr.challenge05.mostafa.remotedatasource.RemoteDataSource
 import kotlinx.coroutines.flow.first
 import java.io.IOException
 
-class GetNowPlayingPaggingSource(private val remoteDataSource: RemoteDataSource) : PagingSource<Long, Results>() {
+class GetNowPlayingPaggingSource(private val remoteDataSource: IRemoteDataSource) : PagingSource<Long, Results>() {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(params: LoadParams<Long>): LoadResult<Long, Results> {
         return try {
