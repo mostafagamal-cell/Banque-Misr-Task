@@ -101,15 +101,7 @@ class MainActivity : ComponentActivity() {
                     Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaee", "onCreate: ${destination.route}")
                     when (destination.route) {
                         Destination.POPULAR.route -> {
-                            title.value = "Popular"
-                        }
-
-                        Destination.NowPlaying.route -> {
-                            title.value = "Now Playing"
-                        }
-
-                        Destination.UPCOMING.route -> {
-                            title.value = "Upcoming"
+                            title.value = "Movies"
                         }
                     }
                 }
@@ -118,7 +110,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(modifier = Modifier.padding(innerPadding)) {
                         Row(modifier = Modifier.fillMaxWidth().fillMaxHeight(.1f), verticalAlignment = Alignment.CenterVertically) {
-                            if (title.value != "Popular" && title.value != "Now Playing" && title.value != "Upcoming") {
+                            if (title.value != "Movies") {
                                 IconButton(
                                     modifier = Modifier.padding(10.dp).fillMaxHeight(),
                                     onClick = { navController.popBackStack() }) {
@@ -127,9 +119,12 @@ class MainActivity : ComponentActivity() {
                                         contentDescription = "back"
                                     )
                                 }
+                                Text(text = title.value, fontSize = 25.sp)
+                            }else {
+                                Box(Modifier.fillMaxWidth().fillMaxHeight(), contentAlignment = Alignment.Center){
+                                Text(text = title.value, fontSize = 25.sp)
+                                    }
                             }
-
-                            Text(text = title.value, fontSize = 25.sp)
                         }
                         nav(modifier = Modifier.padding(innerPadding),navController,title)
                     }
