@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,7 @@ fun DetailScreen(navController: NavController, modifier: Modifier = Modifier, vi
             }
             is UiStates.Success -> {
                 val data = (movie.value as UiStates.Success).data
-                Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("DetailScreen"),) {
                     AsyncImage(
                         modifier = Modifier.fillMaxWidth().fillMaxHeight(.5f),
                         placeholder = painterResource(id = R.drawable.loading),
@@ -53,23 +54,23 @@ fun DetailScreen(navController: NavController, modifier: Modifier = Modifier, vi
                     )
                     Spacer(modifier = Modifier.height(18.dp))
                     Row(modifier = modifier.fillMaxWidth().fillMaxHeight(.1f), Arrangement.Center) {
-                        Text(text = "Title: ${data.title}")
+                        Text(text = "Title: ${data.title}",Modifier.testTag("title"))
                     }
                     Spacer(modifier = Modifier.height(18.dp))
                     Row(modifier = modifier.fillMaxWidth().padding(15.dp), Arrangement.Center) {
-                        Text(text = "Overview: ${data.overview}")
+                        Text(text = "Overview: ${data.overview}",Modifier.testTag("Overview"))
                     }
                     Spacer(modifier = Modifier.height(18.dp))
                     Row(modifier = modifier.fillMaxWidth().padding(15.dp), Arrangement.Center) {
-                        Text(text = "Release Date: ${data.releaseDate}")
+                        Text(text = "Release Date: ${data.releaseDate}",Modifier.testTag("Release Date"))
                     }
                     Spacer(modifier = Modifier.height(18.dp))
                     Row(modifier = modifier.fillMaxWidth().padding(15.dp), Arrangement.Center) {
-                        Text(text = "Vote Average: ${data.voteAverage}")
+                        Text(text = "Vote Average: ${data.voteAverage}",Modifier.testTag("Vote Average"))
                     }
                     Spacer(modifier = Modifier.height(18.dp))
                     Row(modifier = modifier.fillMaxWidth().padding(15.dp), Arrangement.Center) {
-                        Text(text = "Original Language: ${data.originalLanguage}")
+                        Text(text = "Original Language: ${data.originalLanguage}",Modifier.testTag("Original Language"))
                     }
                 }
             }

@@ -5,11 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import banquemisr.challenge05.mostafa.repo.IRepo
 import banquemisr.challenge05.mostafa.repo.Repo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class PopularViewModel(repo:Repo): ViewModel() {
+class PopularViewModel(repo: IRepo): ViewModel() {
     val popular=repo.getPopular().cachedIn(viewModelScope)
     val nowPlaying=repo.getNowPlaying().cachedIn(viewModelScope)
     val upcoming=repo.getUpcoming().cachedIn(viewModelScope)

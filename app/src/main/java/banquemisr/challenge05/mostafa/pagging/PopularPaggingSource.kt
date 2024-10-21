@@ -33,7 +33,9 @@ class PopularPaggingSource(private val remoteDataSource: IRemoteDataSource) : Pa
     }
 
     override fun getRefreshKey(state: PagingState<Long, Results>): Long? {
-        return state.anchorPosition?.toLong()
+        val anchorPosition = state.anchorPosition ?: return null
+        val closestPage = state.closestPageToPosition(anchorPosition)
+        return closestPage?.prevKey?.plus(1) ?: closestPage?.nextKey?.minus(1)
     }
 
 }

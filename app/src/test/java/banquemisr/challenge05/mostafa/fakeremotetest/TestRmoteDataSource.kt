@@ -57,7 +57,8 @@ class TestRmoteDataSource {
         try {
          remote.getDetails(999).first()
         }catch (e:Exception){
-            assert(e is NullPointerException)
+            println(e.message)
+            assert(e.message == "Not Found" )
         }
     }
 

@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,17 +56,13 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Composable
-fun PopularScreen(viewModel: PopularViewModel, modifier: Modifier = Modifier,navController: NavController) {
+fun ContentScreen(viewModel: PopularViewModel, modifier: Modifier = Modifier,navController: NavController) {
 
         val context = LocalContext.current
         val connectivityObserver = remember { ConnectivityListener(context) }
         val isConnected by connectivityObserver.isConnected.collectAsState()
         var lazyPagingItems = viewModel.popular.collectAsLazyPagingItems()
         val selected by viewModel.selectedTabIndex.collectAsState()
-        if (isConnected) {
-            Log.d ("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "$isConnected")
-            lazyPagingItems.retry()
-        }
         val popularstate by viewModel.popularStateFlow.collectAsState()
         val nowPlayingstate by viewModel.nowPlayingStateFlow.collectAsState()
         val upcomingstate by viewModel.upcomingStateFlow.collectAsState()
@@ -102,18 +99,30 @@ fun PopularScreen(viewModel: PopularViewModel, modifier: Modifier = Modifier,nav
              0 -> {
                  lazyPagingItems = viewModel.popular.collectAsLazyPagingItems()
                  Spacer(modifier = Modifier.fillMaxHeight(.1f))
+                 if (isConnected) {
+                     Log.d ("sssssssssssssssssssssssss", "$isConnected")
+                     lazyPagingItems.retry()
+                 }
                  ScreenContent(lazyPagingItems, navController,popularstate)
              }
 
              1 -> {
                  lazyPagingItems = viewModel.nowPlaying.collectAsLazyPagingItems()
                  Spacer(modifier = Modifier.fillMaxHeight(.1f))
+                 if (isConnected) {
+                     Log.d ("sssssssssssssssssssssssss", "$isConnected")
+                     lazyPagingItems.retry()
+                 }
                  ScreenContent(lazyPagingItems, navController,nowPlayingstate)
              }
 
              2 -> {
                  lazyPagingItems = viewModel.upcoming.collectAsLazyPagingItems()
                  Spacer(modifier = Modifier.fillMaxHeight(.1f))
+                 if (isConnected) {
+                     Log.d ("sssssssssssssssssssssssss", "$isConnected")
+                     lazyPagingItems.retry()
+                 }
                  ScreenContent(lazyPagingItems, navController,upcomingstate)
 
              }
@@ -132,7 +141,7 @@ private fun ScreenContent(
             state = state,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(),
+                .fillMaxHeight().testTag("LazyRow"),
             horizontalArrangement = Arrangement.Center
         ) {
             items(lazyPagingItems.itemCount) { movie ->
@@ -141,7 +150,6 @@ private fun ScreenContent(
                         Spacer(modifier = Modifier.width(16.dp))
                         Item(
                             move = it1, navController,
-                            id = it1.id?.toInt() ?: 0,
                             title = it1.title ?: "Unknown Title",
                             image = it1.posterPath ?: "default_image_url"
                         )
@@ -197,7 +205,7 @@ fun ShowErrorMessage(message: String){
         Text(
             text = "Error: $message",
             modifier = Modifier
-                .padding(16.dp),
+                .padding(16.dp).testTag("ErrorTest"),
             color = Color.Red,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center
@@ -205,7 +213,7 @@ fun ShowErrorMessage(message: String){
     }
 }
 @Composable
-fun Item(move: Results, nav:NavController, id:Int, title:String, image:String){
+fun Item(move: Results, nav:NavController, title:String, image:String){
     val animatedAlpha = remember { Animatable(0.3f) }
     LaunchedEffect(Unit) {
         animatedAlpha.animateTo(
@@ -217,7 +225,7 @@ fun Item(move: Results, nav:NavController, id:Int, title:String, image:String){
         val gson = com.google.gson.Gson().toJson(move)
         val encodedMovieJson = URLEncoder.encode(gson, StandardCharsets.UTF_8.toString())
         nav.navigate(Destination.DETAIL.createRoute(encodedMovieJson))
-    }) {
+    }.testTag("item")) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             AsyncImage(modifier = Modifier.graphicsLayer { alpha = animatedAlpha.value },placeholder = painterResource(id = R.drawable.loading) ,model = "https://image.tmdb.org/t/p/w500$image", contentDescription = "moviePoster",)
             Spacer(modifier = Modifier.height(4.dp))

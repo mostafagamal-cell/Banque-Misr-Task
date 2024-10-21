@@ -36,7 +36,7 @@ class TestFakeRepo {
         try {
             val response = fakeRepo.getDetail(852).first()
         }catch (e:Exception) {
-            assert(e is NullPointerException)
+            assert(e.message ==  "Not Found")
         }
     }
 }

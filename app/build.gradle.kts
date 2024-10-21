@@ -100,6 +100,8 @@ dependencies {
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("org.robolectric:robolectric:4.10.3")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation ("androidx.paging:paging-testing:3.3.2")
+
 
     // Hamcrest Libraries
     testImplementation("org.hamcrest:hamcrest:2.2")

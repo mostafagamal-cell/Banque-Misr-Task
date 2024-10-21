@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,7 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import banquemisr.challenge05.mostafa.detailsscreen.DetailScreen
 import banquemisr.challenge05.mostafa.pojos.Results
-import banquemisr.challenge05.mostafa.popular.PopularScreen
+import banquemisr.challenge05.mostafa.popular.ContentScreen
 import banquemisr.challenge05.mostafa.remotedatasource.RemoteDataSource
 import banquemisr.challenge05.mostafa.repo.Repo
 import banquemisr.challenge05.mostafa.ui.theme.MostafaTheme
@@ -47,49 +48,64 @@ import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
-            val title = rememberSaveable { mutableStateOf("Popular") }
-            val navController = rememberNavController()
-            LaunchedEffect(Unit) {
-                navController.addOnDestinationChangedListener { controller, destination, arguments ->
-                    Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaee", "onCreate: ${destination.route}")
-                    when (destination.route) {
-                        Destination.POPULAR.route -> {
-                            title.value = "Movies"
-                        }
-                    }
-                }
-            }
             MostafaTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding)) {
-                        Row(modifier = Modifier.fillMaxWidth().fillMaxHeight(.1f), verticalAlignment = Alignment.CenterVertically) {
-                            if (title.value != "Movies") {
-                                IconButton(
-                                    modifier = Modifier.padding(10.dp).fillMaxHeight(),
-                                    onClick = { navController.popBackStack() }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.ArrowBack,
-                                        contentDescription = "back"
-                                    )
-                                }
-                                Text(text = title.value, fontSize = 25.sp)
-                            }else {
-                                Box(Modifier.fillMaxWidth().fillMaxHeight(), contentAlignment = Alignment.Center){
-                                Text(text = title.value, fontSize = 25.sp)
-                                    }
-                            }
-                        }
-                        nav(modifier = Modifier.padding(innerPadding),navController,title)
-                    }
-
+                MainScreen()
+            }
+        }
+    }
+}
+@Composable
+fun MainScreen(
+) {
+    val title = rememberSaveable { mutableStateOf("Movies") }
+    val navController = rememberNavController()
+    LaunchedEffect(Unit) {
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            Log.d("aaaaaaaaaaaaaaaaaaaaaaaaaaee", "onCreate: ${destination.route}")
+            when (destination.route) {
+                Destination.MainScreen.route -> {
+                    title.value = "Movies"
                 }
             }
         }
+    }
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(.1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (title.value != "Movies") {
+                    IconButton(
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .fillMaxHeight().testTag("backButton"),
+                        onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "back"
+                        )
+                    }
+                    Text(text = title.value, fontSize = 25.sp)
+                } else {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = title.value, fontSize = 25.sp)
+                    }
+                }
+            }
+            nav(modifier = Modifier.padding(innerPadding), navController, title)
+        }
+
     }
 }
 @Composable
@@ -99,9 +115,9 @@ fun nav(modifier: Modifier,navController: NavHostController,title:MutableState<S
     val detailFac= DetailFac(repo)
     val popularViewModel= viewModel<PopularViewModel>(factory = popularFac)
     val detailViewModel= viewModel<DetialViewModel>(factory = detailFac)
-    NavHost(navController = navController, startDestination = Destination.POPULAR.route) {
-        composable(Destination.POPULAR.route) {
-            PopularScreen(navController=navController,modifier = modifier,viewModel = popularViewModel)
+    NavHost(navController = navController, startDestination = Destination.MainScreen.route) {
+        composable(Destination.MainScreen.route) {
+            ContentScreen(navController=navController,modifier = modifier,viewModel = popularViewModel)
         }
         composable(Destination.DETAIL.route) {
             val encodedMovieJson = it.arguments?.getString("id")
@@ -122,15 +138,11 @@ fun nav(modifier: Modifier,navController: NavHostController,title:MutableState<S
 }
 
 object Screens{
-    const val NowPlaying="now playing"
-    const val POPULAR="popular"
-    const val UPCOMING="upcoming"
+    const val Main="Main"
     const val DETAIL="Detail"
 }
 sealed class Destination(val route:String){
-    data object NowPlaying:Destination(route=Screens.NowPlaying)
-    data object POPULAR:Destination(route=Screens.POPULAR)
-    data object UPCOMING:Destination(route=Screens.UPCOMING)
+    data object MainScreen:Destination(route=Screens.Main)
     data object DETAIL:Destination(route="${Screens.DETAIL}/{id}"){
       fun createRoute(id:String)= "${Screens.DETAIL}/$id"
     }

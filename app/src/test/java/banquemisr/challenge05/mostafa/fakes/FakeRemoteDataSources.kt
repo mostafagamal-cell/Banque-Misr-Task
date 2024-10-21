@@ -20,6 +20,10 @@ class FakeRemoteDataSources: IRemoteDataSource {
     }
 
     override suspend fun getDetails(id: Long): Flow<Results> {
-        return flowOf(generateDummyResults()[0].results.find { it.id == id }!!)
+        try {
+            return flowOf(generateDummyResults()[0].results.find { it.id == id }!!)
+        }catch (e:Exception){
+            throw Exception("Not Found")
+        }
     }
 }
