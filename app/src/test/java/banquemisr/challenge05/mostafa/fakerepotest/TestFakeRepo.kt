@@ -4,6 +4,7 @@ import androidx.paging.map
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import banquemisr.challenge05.mostafa.fakes.FakeRemoteDataSources
 import banquemisr.challenge05.mostafa.fakes.FakeRepo
+import banquemisr.challenge05.mostafa.repo.IRepo
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
@@ -13,7 +14,7 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class TestFakeRepo {
-    lateinit var fakeRepo: FakeRepo
+    lateinit var fakeRepo: IRepo
     @Before
     fun setUp() {
         fakeRepo = FakeRepo(FakeRemoteDataSources())
