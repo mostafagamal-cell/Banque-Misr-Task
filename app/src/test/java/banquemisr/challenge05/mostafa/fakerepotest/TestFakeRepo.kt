@@ -35,7 +35,7 @@ class TestFakeRepo {
     fun get_detail_fail()=runTest {
 
         try {
-            val response = fakeRepo.getDetail(852).first()
+         fakeRepo.getDetail(852).first()
         }catch (e:Exception) {
             assert(e.message ==  "Not Found")
         }
